@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>U Plan 2 Nail It — Daily Life Manager</title>
+<meta name="description" content="Manage your daily tasks, timetable, budgets, bills, and life notes — all in one beautiful desktop app." />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0c12;
+    --panel: #13161f;
+    --border: #1e2230;
+    --text: #e8eaf0;
+    --dim: #7a8299;
+    --accent: #6c8cff;
+    --green: #6ce0b3;
+    --purple: #a78bfa;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    background: rgba(10,12,18,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-size: 20px; font-weight: 800;
+    background: linear-gradient(135deg, #93a6ff, #b79bfb 55%, #7fe6c1);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { color: var(--dim); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--accent), #5b7bff);
+    color: #fff; border: none; padding: 10px 22px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
+    transition: filter .15s, transform .12s;
+  }
+  .nav-cta:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,140,255,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(108,140,255,.12); border: 1px solid rgba(108,140,255,.25);
+    color: var(--accent); padding: 6px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 600; margin-bottom: 28px;
+  }
+  .hero-badge::before { content: '✦'; }
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+    max-width: 800px; margin-bottom: 24px;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, #93a6ff 0%, #b79bfb 50%, #7fe6c1 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p {
+    font-size: 19px; color: var(--dim); max-width: 560px;
+    margin: 0 auto 48px; line-height: 1.7;
+  }
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+  .btn-win {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--accent), #5b7bff);
+    color: #fff; padding: 16px 32px; border-radius: 14px;
+    font-size: 16px; font-weight: 700; text-decoration: none;
+    transition: filter .15s, transform .12s; box-shadow: 0 8px 32px rgba(108,140,255,.3);
+  }
+  .btn-win:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  .btn-android {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--green), #3ab88a);
+    color: #fff; padding: 16px 32px; border-radius: 14px;
+    font-size: 16px; font-weight: 700; text-decoration: none;
+    transition: filter .15s, transform .12s; box-shadow: 0 8px 32px rgba(108,224,179,.25);
+  }
+  .btn-android:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--dim); padding: 16px 32px; border-radius: 14px;
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    transition: border-color .15s, color .15s, transform .12s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
+
+  .hero-note { margin-top: 20px; font-size: 13px; color: var(--dim); }
+
+  /* SCREENSHOT PREVIEW */
+  .preview-wrap {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px 100px;
+    position: relative;
+  }
+  .preview-frame {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .preview-bar {
+    background: #1a1d27; padding: 12px 18px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #ff6b6b; }
+  .dot-y { background: #ffb454; }
+  .dot-g { background: #6ce0b3; }
+  .preview-bar-title {
+    flex: 1; text-align: center; font-size: 13px; color: var(--dim); font-weight: 500;
+  }
+  .preview-body {
+    display: grid; grid-template-columns: 220px 1fr;
+    min-height: 480px;
+  }
+  .preview-sidebar {
+    background: #161922; border-right: 1px solid var(--border);
+    padding: 22px 14px;
+  }
+  .preview-brand-label {
+    font-size: 15px; font-weight: 800; padding: 0 6px 24px;
+    background: linear-gradient(135deg, #93a6ff, #b79bfb 55%, #7fe6c1);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .preview-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+    font-size: 13px; color: var(--dim); font-weight: 500;
+  }
+  .preview-nav-item.active { background: var(--accent); color: #fff; font-weight: 700; }
+  .preview-main { padding: 28px 32px; }
+  .preview-h { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .preview-sub { font-size: 13px; color: var(--dim); margin-bottom: 24px; }
+  .preview-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  .preview-stat {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+  }
+  .preview-stat .n { font-size: 22px; font-weight: 800; }
+  .preview-stat .l { font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .preview-tasks { display: flex; flex-direction: column; gap: 8px; }
+  .preview-task {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent); border-radius: 8px; padding: 10px 14px;
+    font-size: 13px;
+  }
+  .preview-task.green { border-left-color: var(--green); opacity: .6; }
+  .preview-task.warn { border-left-color: var(--warn); }
+  .preview-task.danger { border-left-color: var(--danger); }
+  .preview-check {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 2px solid var(--border); flex-shrink: 0;
+  }
+  .preview-check.done { background: var(--green); border-color: var(--green); }
+  .preview-task-text .name { font-weight: 600; }
+  .preview-task-text .meta { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  /* FEATURES */
+  section { padding: 100px 24px; }
+  .section-label {
+    text-align: center; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 14px;
+  }
+  .section-title {
+    text-align: center; font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800; letter-spacing: -1px; margin-bottom: 14px;
+  }
+  .section-sub { text-align: center; color: var(--dim); font-size: 17px; max-width: 540px; margin: 0 auto 64px; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .feature-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+    transition: border-color .2s, transform .2s;
+  }
+  .feature-card:hover { border-color: rgba(108,140,255,.4); transform: translateY(-3px); }
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 18px;
+  }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: var(--dim); line-height: 1.6; }
+
+  /* DOWNLOAD */
+  .download-section {
+    background: linear-gradient(135deg, rgba(108,140,255,.08), rgba(167,139,250,.08), rgba(108,224,179,.06));
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .download-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .download-inner h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
+  .download-inner p { color: var(--dim); font-size: 17px; margin-bottom: 48px; }
+  .download-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+  .platform-note { font-size: 13px; color: var(--dim); }
+
+  /* WHATSAPP */
+  .share-bar {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 28px 24px; border-top: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .share-bar span { font-size: 14px; color: var(--dim); }
+  .btn-wa {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #25d366; color: #fff; padding: 11px 22px;
+    border-radius: 10px; font-size: 14px; font-weight: 700;
+    text-decoration: none; transition: filter .15s, transform .12s;
+  }
+  .btn-wa:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 24px; text-align: center;
+    border-top: 1px solid var(--border); color: var(--dim); font-size: 13px;
+  }
+  footer strong { color: var(--text); }
+
+  @media (max-width: 700px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .preview-body { grid-template-columns: 1fr; }
+    .preview-sidebar { display: none; }
+    .preview-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">U Plan 2 Nail It</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#download">Download</a>
+  </div>
+  <a class="nav-cta" href="#download">Download Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Free Desktop &amp; Mobile App</div>
+  <h1>Plan your day.<br/><span>Nail your life.</span></h1>
+  <p>Tasks, timetable, budgets, bills, and notes — every aspect of your daily life, in one beautiful app.</p>
+  <div class="hero-btns">
+    <a class="btn-win" href="#download">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+      Download for Windows
+    </a>
+    <a class="btn-android" href="#download">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m-11.046 0c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m11.41-6.19l1.43-2.477a.297.297 0 0 0-.109-.406.298.298 0 0 0-.406.109l-1.449 2.51A8.938 8.938 0 0 0 12 8.15a8.937 8.937 0 0 0-5.353 1.737L5.198 7.377a.297.297 0 0 0-.406-.109.297.297 0 0 0-.109.406l1.43 2.477C3.968 11.358 2.5 13.58 2.5 16.1h19c0-2.52-1.468-4.742-3.613-5.949"/></svg>
+      Download for Android
+    </a>
+    <a class="btn-outline" href="#features">See features ↓</a>
+  </div>
+  <p class="hero-note">Free · No account needed · Your data stays on your device</p>
+</section>
+
+<!-- APP PREVIEW -->
+<div class="preview-wrap">
+  <div class="preview-frame">
+    <div class="preview-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="preview-bar-title">U Plan 2 Nail It</div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-sidebar">
+        <div class="preview-brand-label">U Plan 2 Nail It</div>
+        <div class="preview-nav-item active">📋 Tasks</div>
+        <div class="preview-nav-item">🕒 Timetable</div>
+        <div class="preview-nav-item">💰 Finances</div>
+        <div class="preview-nav-item">📝 Notes</div>
+      </div>
+      <div class="preview-main">
+        <div class="preview-h">Daily Tasks &amp; Achievements</div>
+        <div class="preview-sub">Keep it realistic. Small wins, tracked daily.</div>
+        <div class="preview-stats">
+          <div class="preview-stat"><div class="n">6</div><div class="l">Total tasks</div></div>
+          <div class="preview-stat"><div class="n">4</div><div class="l">Achieved</div></div>
+          <div class="preview-stat"><div class="n">67%</div><div class="l">Completion</div></div>
+          <div class="preview-stat"><div class="n">$24.50</div><div class="l">Tasks cost today</div></div>
+        </div>
+        <div class="preview-tasks">
+          <div class="preview-task green">
+            <div class="preview-check done"></div>
+            <div class="preview-task-text">
+              <div class="name">Morning workout</div>
+              <div class="meta">🕒 07:00 · 45 min · low priority</div>
+            </div>
+          </div>
+          <div class="preview-task">
+            <div class="preview-check"></div>
+            <div class="preview-task-text">
+              <div class="name">Pay electricity bill</div>
+              <div class="meta">🕒 10:00 · $12.00 · medium priority</div>
+            </div>
+          </div>
+          <div class="preview-task warn">
+            <div class="preview-check"></div>
+            <div class="preview-task-text">
+              <div class="name">Submit project report</div>
+              <div class="meta">🕒 14:00 · 90 min · high priority</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">Everything you need</div>
+  <h2 class="section-title">Built for real life</h2>
+  <p class="section-sub">Not just a to-do list. A complete system for managing how you spend your time and money every day.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(108,140,255,.15);">📋</div>
+      <h3>Daily Tasks &amp; Achievements</h3>
+      <p>Add tasks with priority levels, time, duration, and cost. Mark them done and track your completion rate in real time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(167,139,250,.15);">🕒</div>
+      <h3>Visual Timetable</h3>
+      <p>See all your tasks laid out chronologically across the day. Know exactly what's coming next and stay on schedule.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(108,224,179,.15);">💰</div>
+      <h3>Full Budget Tracker</h3>
+      <p>Log income, expenses, and savings. Track rent, electricity, phone, subscriptions — every cost of living, categorised and visualised.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(244,114,182,.15);">📝</div>
+      <h3>Personal Notes</h3>
+      <p>Write notes and reports about your tasks and day. Keep your thoughts organised alongside your schedule.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,180,84,.15);">📄</div>
+      <h3>PDF Export &amp; Sharing</h3>
+      <p>Export any section as a PDF or share a text summary via WhatsApp or email — right from inside the app.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,107,107,.15);">🔒</div>
+      <h3>100% Private</h3>
+      <p>No accounts, no cloud, no tracking. All your data lives on your device only. Works fully offline.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download-section" id="download">
+  <div class="download-inner">
+    <h2>Get the app — free</h2>
+    <p>One click to download. No signup, no subscription, no catch.</p>
+    <div class="download-btns">
+      <a class="btn-win" href="#" onclick="alert('Upload your .exe to Google Drive or GitHub and paste the link here.')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        Download for Windows (.exe)
+      </a>
+      <a class="btn-android" href="#" onclick="alert('Upload your .apk and paste the link here.')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m-11.046 0c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m11.41-6.19l1.43-2.477a.297.297 0 0 0-.109-.406.298.298 0 0 0-.406.109l-1.449 2.51A8.938 8.938 0 0 0 12 8.15a8.937 8.937 0 0 0-5.353 1.737L5.198 7.377a.297.297 0 0 0-.406-.109.297.297 0 0 0-.109.406l1.43 2.477C3.968 11.358 2.5 13.58 2.5 16.1h19c0-2.52-1.468-4.742-3.613-5.949"/></svg>
+        Download for Android (.apk)
+      </a>
+    </div>
+    <p class="platform-note">Windows 10/11 · Android 8+ · Free forever</p>
+  </div>
+</section>
+
+<!-- WHATSAPP SHARE BAR -->
+<div class="share-bar">
+  <span>Know someone who'd love this?</span>
+  <a class="btn-wa" href="https://wa.me/?text=Check%20out%20U%20Plan%202%20Nail%20It%20%E2%80%94%20a%20free%20desktop%20app%20for%20daily%20tasks%2C%20budget%2C%20timetable%20and%20notes!%20Download%20it%20here%3A%20%5BYOUR-LINK%5D" target="_blank">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+    Share on WhatsApp
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Designed &amp; Developed by <strong>Amged Higazi</strong> &nbsp;·&nbsp; U Plan 2 Nail It &nbsp;·&nbsp; Free forever</p>
+  <p style="margin-top:8px;">© 2026 All rights reserved.</p>
+</footer>
+
+</body>
+</html>
