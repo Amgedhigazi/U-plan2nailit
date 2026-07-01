@@ -2,287 +2,428 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>U Plan 2 Nail It</title>
-<link rel="stylesheet" href="style.css" />
-<link rel="manifest" href="manifest.json" />
-<link rel="icon" href="icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#6c8cff" />
-<meta name="mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>U Plan 2 Nail It — Daily Life Manager</title>
+<meta name="description" content="Manage your daily tasks, timetable, budgets, bills, and life notes — all in one beautiful desktop app." />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0c12;
+    --panel: #13161f;
+    --border: #1e2230;
+    --text: #e8eaf0;
+    --dim: #7a8299;
+    --accent: #6c8cff;
+    --green: #6ce0b3;
+    --purple: #a78bfa;
+    --warn: #ffb454;
+    --danger: #ff6b6b;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    background: rgba(10,12,18,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-size: 20px; font-weight: 800;
+    background: linear-gradient(135deg, #93a6ff, #b79bfb 55%, #7fe6c1);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { color: var(--dim); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .15s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: linear-gradient(135deg, var(--accent), #5b7bff);
+    color: #fff; border: none; padding: 10px 22px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
+    transition: filter .15s, transform .12s;
+  }
+  .nav-cta:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,140,255,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(108,140,255,.12); border: 1px solid rgba(108,140,255,.25);
+    color: var(--accent); padding: 6px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 600; margin-bottom: 28px;
+  }
+  .hero-badge::before { content: '✦'; }
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+    max-width: 800px; margin-bottom: 24px;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, #93a6ff 0%, #b79bfb 50%, #7fe6c1 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p {
+    font-size: 19px; color: var(--dim); max-width: 560px;
+    margin: 0 auto 48px; line-height: 1.7;
+  }
+  .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+  .btn-win {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--accent), #5b7bff);
+    color: #fff; padding: 16px 32px; border-radius: 14px;
+    font-size: 16px; font-weight: 700; text-decoration: none;
+    transition: filter .15s, transform .12s; box-shadow: 0 8px 32px rgba(108,140,255,.3);
+  }
+  .btn-win:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  .btn-android {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--green), #3ab88a);
+    color: #fff; padding: 16px 32px; border-radius: 14px;
+    font-size: 16px; font-weight: 700; text-decoration: none;
+    transition: filter .15s, transform .12s; box-shadow: 0 8px 32px rgba(108,224,179,.25);
+  }
+  .btn-android:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--dim); padding: 16px 32px; border-radius: 14px;
+    font-size: 16px; font-weight: 600; text-decoration: none;
+    transition: border-color .15s, color .15s, transform .12s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
+
+  .hero-note { margin-top: 20px; font-size: 13px; color: var(--dim); }
+
+  /* SCREENSHOT PREVIEW */
+  .preview-wrap {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px 100px;
+    position: relative;
+  }
+  .preview-frame {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .preview-bar {
+    background: #1a1d27; padding: 12px 18px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-r { background: #ff6b6b; }
+  .dot-y { background: #ffb454; }
+  .dot-g { background: #6ce0b3; }
+  .preview-bar-title {
+    flex: 1; text-align: center; font-size: 13px; color: var(--dim); font-weight: 500;
+  }
+  .preview-body {
+    display: grid; grid-template-columns: 220px 1fr;
+    min-height: 480px;
+  }
+  .preview-sidebar {
+    background: #161922; border-right: 1px solid var(--border);
+    padding: 22px 14px;
+  }
+  .preview-brand-label {
+    font-size: 15px; font-weight: 800; padding: 0 6px 24px;
+    background: linear-gradient(135deg, #93a6ff, #b79bfb 55%, #7fe6c1);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .preview-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+    font-size: 13px; color: var(--dim); font-weight: 500;
+  }
+  .preview-nav-item.active { background: var(--accent); color: #fff; font-weight: 700; }
+  .preview-main { padding: 28px 32px; }
+  .preview-h { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .preview-sub { font-size: 13px; color: var(--dim); margin-bottom: 24px; }
+  .preview-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  .preview-stat {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+  }
+  .preview-stat .n { font-size: 22px; font-weight: 800; }
+  .preview-stat .l { font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .preview-tasks { display: flex; flex-direction: column; gap: 8px; }
+  .preview-task {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-left: 4px solid var(--accent); border-radius: 8px; padding: 10px 14px;
+    font-size: 13px;
+  }
+  .preview-task.green { border-left-color: var(--green); opacity: .6; }
+  .preview-task.warn { border-left-color: var(--warn); }
+  .preview-task.danger { border-left-color: var(--danger); }
+  .preview-check {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 2px solid var(--border); flex-shrink: 0;
+  }
+  .preview-check.done { background: var(--green); border-color: var(--green); }
+  .preview-task-text .name { font-weight: 600; }
+  .preview-task-text .meta { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  /* FEATURES */
+  section { padding: 100px 24px; }
+  .section-label {
+    text-align: center; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 14px;
+  }
+  .section-title {
+    text-align: center; font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800; letter-spacing: -1px; margin-bottom: 14px;
+  }
+  .section-sub { text-align: center; color: var(--dim); font-size: 17px; max-width: 540px; margin: 0 auto 64px; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .feature-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px;
+    transition: border-color .2s, transform .2s;
+  }
+  .feature-card:hover { border-color: rgba(108,140,255,.4); transform: translateY(-3px); }
+  .feature-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 18px;
+  }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: var(--dim); line-height: 1.6; }
+
+  /* DOWNLOAD */
+  .download-section {
+    background: linear-gradient(135deg, rgba(108,140,255,.08), rgba(167,139,250,.08), rgba(108,224,179,.06));
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  }
+  .download-inner { max-width: 700px; margin: 0 auto; text-align: center; }
+  .download-inner h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
+  .download-inner p { color: var(--dim); font-size: 17px; margin-bottom: 48px; }
+  .download-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+  .platform-note { font-size: 13px; color: var(--dim); }
+
+  /* WHATSAPP */
+  .share-bar {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 28px 24px; border-top: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .share-bar span { font-size: 14px; color: var(--dim); }
+  .btn-wa {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #25d366; color: #fff; padding: 11px 22px;
+    border-radius: 10px; font-size: 14px; font-weight: 700;
+    text-decoration: none; transition: filter .15s, transform .12s;
+  }
+  .btn-wa:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 24px; text-align: center;
+    border-top: 1px solid var(--border); color: var(--dim); font-size: 13px;
+  }
+  footer strong { color: var(--text); }
+
+  @media (max-width: 700px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .preview-body { grid-template-columns: 1fr; }
+    .preview-sidebar { display: none; }
+    .preview-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
 </head>
 <body>
-  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
-    <defs>
-      <symbol id="i-tasks" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 6.5l1 1 1.8-2.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12l1 1 1.8-2.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17.5l1 1 1.8-2.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5v5l3.5 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10.5h18" stroke="currentColor" stroke-width="2"/><circle cx="16.5" cy="14" r="1.1" fill="currentColor" stroke="none"/></symbol>
-      <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3h9l3.5 3.5V21H6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15 3v3.5h3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12h6M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-trend-up" viewBox="0 0 24 24"><path d="M4 17l5.5-5.5 3.5 3.5L20 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 7h5.5v5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-trend-down" viewBox="0 0 24 24"><path d="M4 7l5.5 5.5 3.5-3.5L20 16.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.5 17h5.5v-5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-bank" viewBox="0 0 24 24"><path d="M12 3l9 5H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M5 10.5V18M9.5 10.5V18M14.5 10.5V18M19 10.5V18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3 20.5h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-print" viewBox="0 0 24 24"><rect x="5.5" y="8.5" width="13" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 8.5V4h10v4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7.5 15.5V20h9v-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
-      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5v11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19.5h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-share" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="6" r="2.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="18" r="2.3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 11l8-4M8 13l8 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v2.2M12 18.8V21M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M3 12h2.2M18.8 12H21M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.3 8.3 0 1 1 9.8 4a6.8 6.8 0 0 0 10.2 10.2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
-      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5l1-4L15 5l3.5 3.5L8 19l-4 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M13.2 6.8l3.5 3.5" stroke="currentColor" stroke-width="1.8"/></symbol>
-      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 7V4.5h6V7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 7l1 13h8l1-13" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
-      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4.5 7l7.5 6 7.5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 1 3.2 6.4L4 20l1.3-3.3A7.96 7.96 0 0 1 4 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
-      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 12h17M12 3.5c2.5 2.3 2.5 15 0 17M12 3.5c-2.5 2.3-2.5 15 0 17" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
-    </defs>
-  </svg>
 
-  <div class="page">
-  <div class="app">
-    <nav class="sidebar">
-      <div class="brand">
-        <div class="brand-wordmark" role="img" aria-label="U Plan 2 Nail It">
-          <span class="wm-line1">U Plan <span class="wm-two">2<svg class="wm-leaf" viewBox="0 0 22 14" aria-hidden="true">
-            <defs>
-              <linearGradient id="leafGrad" x1="0" y1="0" x2="22" y2="10" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#7fe6c1"/>
-                <stop offset="1" stop-color="#34d399"/>
-              </linearGradient>
-            </defs>
-            <path d="M1 8C4 2 13 0 21 2C17 9 8 13 1 8Z" fill="url(#leafGrad)"/>
-            <path d="M2.5 7C8 5 14 3.6 19.5 2" stroke="rgba(255,255,255,.5)" stroke-width="0.8" fill="none" stroke-linecap="round"/>
-          </svg></span></span>
-          <span class="wm-line2">Nail it</span>
-        </div>
-      </div>
-      <div class="nav-section nav-section-settings">
-        <div class="settings-inline-row">
-          <select id="lang-select" aria-label="Language" title="Language">
-            <option value="en">English</option>
-            <option value="ar">العربية</option>
-          </select>
-          <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Theme" title="Theme"><svg class="icon"><use href="#i-moon"/></svg><span data-i18n="theme.dark">Dark</span></button>
-          <select id="currency-select" aria-label="Currency" title="Currency">
-            <option value="USD">USD $</option>
-            <option value="EUR">EUR €</option>
-            <option value="GBP">GBP £</option>
-            <option value="JPY">JPY ¥</option>
-            <option value="INR">INR ₹</option>
-            <option value="CAD">CAD $</option>
-            <option value="AUD">AUD $</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="nav-section nav-section-main">
-        <button class="nav-btn active" data-tab="tasks" title="Tasks"><span class="icon-badge"><svg class="icon"><use href="#i-tasks"/></svg></span><span data-i18n="nav.tasks">Tasks</span></button>
-        <button class="nav-btn" data-tab="schedule" title="Timetable"><span class="icon-badge"><svg class="icon"><use href="#i-clock"/></svg></span><span data-i18n="nav.schedule">Timetable</span></button>
-        <button class="nav-btn" data-tab="finance" title="Finances"><span class="icon-badge"><svg class="icon"><use href="#i-wallet"/></svg></span><span data-i18n="nav.finance">Finances</span></button>
-        <button class="nav-btn" data-tab="notes" title="Notes"><span class="icon-badge"><svg class="icon"><use href="#i-note"/></svg></span><span data-i18n="nav.notes">Notes</span></button>
-      </div>
-
-      <div class="sidebar-spacer"></div>
-
-      <div class="sidebar-footer">
-        <div id="today"></div>
-      </div>
-    </nav>
-
-    <main class="content">
-
-      <!-- TASKS TAB -->
-      <section id="tab-tasks" class="tab active">
-        <header class="tab-header">
-          <h1 data-i18n="tasks.title">Daily Tasks &amp; Achievements</h1>
-          <p class="subtitle" data-i18n="tasks.subtitle">Keep it realistic. Small wins, tracked daily.</p>
-          <div class="tab-toolbar">
-            <button class="tb-btn" data-action="print" title="Print this tab"><svg class="icon"><use href="#i-print"/></svg><span data-i18n="tb.print">Print</span></button>
-            <button class="tb-btn" data-action="pdf" title="Export this tab as PDF"><svg class="icon"><use href="#i-download"/></svg><span data-i18n="tb.pdf">PDF</span></button>
-            <button class="tb-btn" data-action="share" title="Copy a shareable summary"><svg class="icon"><use href="#i-share"/></svg><span data-i18n="tb.share">Share</span></button>
-          </div>
-        </header>
-
-        <div class="stats-row" id="task-stats"></div>
-
-        <form id="task-form" class="card form-row">
-          <input type="text" id="t-title" placeholder="Task name" aria-label="Task name" data-i18n-ph="ph.taskName" required />
-          <input type="time" id="t-time" aria-label="Scheduled time" />
-          <input type="number" id="t-duration" placeholder="Duration (min)" aria-label="Duration in minutes" data-i18n-ph="ph.duration" min="0" />
-          <input type="number" id="t-cost" placeholder="Cost ($)" aria-label="Cost" min="0" step="0.01" />
-          <select id="t-priority" aria-label="Priority">
-            <option value="low" data-i18n="priority.low">Low</option>
-            <option value="medium" selected data-i18n="priority.medium">Medium</option>
-            <option value="high" data-i18n="priority.high">High</option>
-          </select>
-          <button type="submit" class="btn-primary" data-i18n="btn.addTask">+ Add Task</button>
-        </form>
-
-        <div class="filter-row">
-          <button class="chip active" data-filter="all" data-i18n="filter.all">All</button>
-          <button class="chip" data-filter="pending" data-i18n="filter.pending">Pending</button>
-          <button class="chip" data-filter="done" data-i18n="filter.done">Achieved</button>
-        </div>
-
-        <ul id="task-list" class="task-list"></ul>
-      </section>
-
-      <!-- SCHEDULE TAB -->
-      <section id="tab-schedule" class="tab">
-        <header class="tab-header">
-          <h1 data-i18n="schedule.title">Timetable</h1>
-          <p class="subtitle" data-i18n="schedule.subtitle">Your tasks laid out across the day, by scheduled time.</p>
-          <div class="tab-toolbar">
-            <button class="tb-btn" data-action="print" title="Print this tab"><svg class="icon"><use href="#i-print"/></svg><span data-i18n="tb.print">Print</span></button>
-            <button class="tb-btn" data-action="pdf" title="Export this tab as PDF"><svg class="icon"><use href="#i-download"/></svg><span data-i18n="tb.pdf">PDF</span></button>
-            <button class="tb-btn" data-action="share" title="Copy a shareable summary"><svg class="icon"><use href="#i-share"/></svg><span data-i18n="tb.share">Share</span></button>
-          </div>
-        </header>
-        <div id="timetable" class="timetable"></div>
-      </section>
-
-      <!-- FINANCE TAB -->
-      <section id="tab-finance" class="tab">
-        <header class="tab-header">
-          <h1 data-i18n="finance.title">Finances &amp; Living Costs</h1>
-          <p class="subtitle" data-i18n="finance.subtitle">Income, spending, and savings — every dollar accounted for.</p>
-          <div class="tab-toolbar">
-            <button class="tb-btn" data-action="print" title="Print this tab"><svg class="icon"><use href="#i-print"/></svg><span data-i18n="tb.print">Print</span></button>
-            <button class="tb-btn" data-action="pdf" title="Export this tab as PDF"><svg class="icon"><use href="#i-download"/></svg><span data-i18n="tb.pdf">PDF</span></button>
-            <button class="tb-btn" data-action="share" title="Copy a shareable summary"><svg class="icon"><use href="#i-share"/></svg><span data-i18n="tb.share">Share</span></button>
-          </div>
-        </header>
-
-        <div class="stats-row" id="finance-overview"></div>
-
-        <div class="filter-row" id="finance-subnav">
-          <button class="chip active" data-kind="bills"><svg class="icon"><use href="#i-trend-down"/></svg><span data-i18n="finance.spend">Spend</span></button>
-          <button class="chip" data-kind="income"><svg class="icon"><use href="#i-trend-up"/></svg><span data-i18n="finance.income">Income</span></button>
-          <button class="chip" data-kind="savings"><svg class="icon"><use href="#i-bank"/></svg><span data-i18n="finance.savings">Savings</span></button>
-        </div>
-
-        <div class="stats-row" id="finance-stats"></div>
-
-        <form id="finance-form" class="card form-row">
-          <input type="text" id="f-name" placeholder="Bill / payment name" aria-label="Name" required />
-          <input type="text" id="f-category" list="category-options" placeholder="Category (type your own)" aria-label="Category" data-i18n-ph="ph.category" required />
-          <datalist id="category-options"></datalist>
-          <input type="number" id="f-amount" placeholder="Amount ($)" aria-label="Amount" min="0" step="0.01" required />
-          <input type="date" id="f-due" aria-label="Date" />
-          <select id="f-recurring" aria-label="Recurrence">
-            <option value="monthly" data-i18n="recurring.monthly">Monthly</option>
-            <option value="weekly" data-i18n="recurring.weekly">Weekly</option>
-            <option value="yearly" data-i18n="recurring.yearly">Yearly</option>
-            <option value="one-time" data-i18n="recurring.onetime">One-time</option>
-          </select>
-          <button type="submit" class="btn-primary" id="finance-submit-btn">+ Add Bill</button>
-        </form>
-
-        <div class="finance-grid">
-          <div class="card chart-card">
-            <h3 id="finance-breakdown-title">By Category</h3>
-            <div id="finance-breakdown"></div>
-          </div>
-          <div class="card">
-            <h3 id="finance-list-title">All Bills &amp; Payments</h3>
-            <ul id="finance-list" class="finance-list"></ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- NOTES TAB -->
-      <section id="tab-notes" class="tab">
-        <header class="tab-header">
-          <h1 data-i18n="notes.title">Notes</h1>
-          <p class="subtitle" data-i18n="notes.subtitle">Personal notes and reporting — anything on your mind about your tasks.</p>
-          <div class="tab-toolbar">
-            <button class="tb-btn" data-action="print" title="Print this tab"><svg class="icon"><use href="#i-print"/></svg><span data-i18n="tb.print">Print</span></button>
-            <button class="tb-btn" data-action="pdf" title="Export this tab as PDF"><svg class="icon"><use href="#i-download"/></svg><span data-i18n="tb.pdf">PDF</span></button>
-            <button class="tb-btn" data-action="share" title="Copy a shareable summary"><svg class="icon"><use href="#i-share"/></svg><span data-i18n="tb.share">Share</span></button>
-          </div>
-        </header>
-
-        <form id="note-form" class="card form-row note-form-row">
-          <input type="text" id="n-title" placeholder="Note title" aria-label="Note title" data-i18n-ph="ph.noteTitle" required />
-          <textarea id="n-body" placeholder="Write your note..." aria-label="Note body" data-i18n-ph="ph.noteBody" rows="3" required></textarea>
-          <button type="submit" class="btn-primary" data-i18n="btn.addNote">+ Add Note</button>
-        </form>
-
-        <ul id="note-list" class="note-list"></ul>
-      </section>
-
-    </main>
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">U Plan 2 Nail It</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#download">Download</a>
   </div>
+  <a class="nav-cta" href="#download">Download Free</a>
+</nav>
 
-  <section id="news-widget" class="news-widget hidden">
-    <h3 class="news-widget-title" data-i18n="news.title">Market News</h3>
-    <div class="news-ticker" id="news-ticker">
-      <div class="news-cards" id="news-cards"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Free Desktop &amp; Mobile App</div>
+  <h1>Plan your day.<br/><span>Nail your life.</span></h1>
+  <p>Tasks, timetable, budgets, bills, and notes — every aspect of your daily life, in one beautiful app.</p>
+  <div class="hero-btns">
+    <a class="btn-win" href="#download">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+      Download for Windows
+    </a>
+    <a class="btn-android" href="#download">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m-11.046 0c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m11.41-6.19l1.43-2.477a.297.297 0 0 0-.109-.406.298.298 0 0 0-.406.109l-1.449 2.51A8.938 8.938 0 0 0 12 8.15a8.937 8.937 0 0 0-5.353 1.737L5.198 7.377a.297.297 0 0 0-.406-.109.297.297 0 0 0-.109.406l1.43 2.477C3.968 11.358 2.5 13.58 2.5 16.1h19c0-2.52-1.468-4.742-3.613-5.949"/></svg>
+      Download for Android
+    </a>
+    <a class="btn-outline" href="#features">See features ↓</a>
+  </div>
+  <p class="hero-note">Free · No account needed · Your data stays on your device</p>
+</section>
+
+<!-- APP PREVIEW -->
+<div class="preview-wrap">
+  <div class="preview-frame">
+    <div class="preview-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+      <div class="preview-bar-title">U Plan 2 Nail It</div>
     </div>
-  </section>
-
-  <footer class="app-footer">
-    <svg class="footer-logo" viewBox="0 0 48 48" aria-hidden="true">
-      <defs>
-        <linearGradient id="footerLogoGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#7c93ff"/>
-          <stop offset="0.5" stop-color="#a78bfa"/>
-          <stop offset="1" stop-color="#6ce0b3"/>
-        </linearGradient>
-      </defs>
-      <circle cx="24" cy="24" r="21" fill="url(#footerLogoGrad)" opacity="0.9"/>
-      <circle cx="24" cy="24" r="14" fill="none" stroke="#fff" stroke-width="2" opacity="0.55"/>
-      <circle cx="24" cy="24" r="7" fill="none" stroke="#fff" stroke-width="2" opacity="0.65"/>
-      <line x1="24" y1="9" x2="24" y2="24" stroke="#fff" stroke-width="2.6" stroke-linecap="round" opacity="0.9"/>
-      <circle cx="24" cy="24" r="2.4" fill="#fff"/>
-    </svg>
-    <div class="footer-copyright">&copy; <span id="footer-year"></span> U Plan 2 Nail It</div>
-    <span class="footer-sep">&middot;</span>
-    <div class="footer-credit" data-i18n="footer.credit">Designed and developed by Amged Higazi</div>
-  </footer>
-  </div>
-
-  <div id="export-view" class="export-view"></div>
-
-  <div id="share-modal" class="modal-overlay hidden">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 data-i18n="modal.title">Share &amp; Export</h3>
-        <button class="modal-close" id="modal-close" title="Close"><svg class="icon"><use href="#i-close"/></svg></button>
+    <div class="preview-body">
+      <div class="preview-sidebar">
+        <div class="preview-brand-label">U Plan 2 Nail It</div>
+        <div class="preview-nav-item active">📋 Tasks</div>
+        <div class="preview-nav-item">🕒 Timetable</div>
+        <div class="preview-nav-item">💰 Finances</div>
+        <div class="preview-nav-item">📝 Notes</div>
       </div>
-      <div class="modal-body">
-
-        <div class="modal-section">
-          <h4 data-i18n="modal.pdfHeading">Export as PDF</h4>
-          <div class="radio-group">
-            <label><input type="radio" name="pdf-scope" value="tab" checked /> <span data-i18n="modal.scopeTab">This tab only</span></label>
-            <label><input type="radio" name="pdf-scope" value="onepage" /> <span data-i18n="modal.scopeOnepage">One-page summary</span></label>
-            <label><input type="radio" name="pdf-scope" value="full" /> <span data-i18n="modal.scopeFull">Full report (all sections)</span></label>
-            <label><input type="radio" name="pdf-scope" value="custom" /> <span data-i18n="modal.scopeCustom">Custom selection</span></label>
-          </div>
-          <div class="custom-sections hidden" id="custom-sections">
-            <label><input type="checkbox" value="tasks" checked /> <span data-i18n="nav.tasks">Tasks</span></label>
-            <label><input type="checkbox" value="schedule" /> <span data-i18n="nav.schedule">Timetable</span></label>
-            <label><input type="checkbox" value="finance" checked /> <span data-i18n="nav.finance">Finances</span></label>
-            <label><input type="checkbox" value="notes" /> <span data-i18n="nav.notes">Notes</span></label>
-          </div>
-          <button class="btn-primary" id="export-pdf-btn"><svg class="icon"><use href="#i-download"/></svg><span data-i18n="modal.exportPdf">Export PDF</span></button>
-          <p class="modal-hint hidden" id="last-pdf-hint"></p>
+      <div class="preview-main">
+        <div class="preview-h">Daily Tasks &amp; Achievements</div>
+        <div class="preview-sub">Keep it realistic. Small wins, tracked daily.</div>
+        <div class="preview-stats">
+          <div class="preview-stat"><div class="n">6</div><div class="l">Total tasks</div></div>
+          <div class="preview-stat"><div class="n">4</div><div class="l">Achieved</div></div>
+          <div class="preview-stat"><div class="n">67%</div><div class="l">Completion</div></div>
+          <div class="preview-stat"><div class="n">$24.50</div><div class="l">Tasks cost today</div></div>
         </div>
-
-        <div class="modal-section">
-          <h4 data-i18n="modal.shareHeading">Share as text</h4>
-          <p class="modal-hint" data-i18n="modal.hint">Copies a plain-text summary of the current tab, or opens it pre-filled in your email client or WhatsApp. To attach an exported PDF, save it above first, then attach the file manually — apps can't auto-attach files to email/WhatsApp links for security reasons.</p>
-          <div class="share-btn-row">
-            <button class="tb-btn" id="share-copy"><svg class="icon"><use href="#i-note"/></svg><span data-i18n="modal.copyText">Copy text</span></button>
-            <button class="tb-btn" id="share-email"><svg class="icon"><use href="#i-mail"/></svg><span data-i18n="modal.email">Email</span></button>
-            <button class="tb-btn" id="share-whatsapp"><svg class="icon"><use href="#i-chat"/></svg><span data-i18n="modal.whatsapp">WhatsApp</span></button>
+        <div class="preview-tasks">
+          <div class="preview-task green">
+            <div class="preview-check done"></div>
+            <div class="preview-task-text">
+              <div class="name">Morning workout</div>
+              <div class="meta">🕒 07:00 · 45 min · low priority</div>
+            </div>
+          </div>
+          <div class="preview-task">
+            <div class="preview-check"></div>
+            <div class="preview-task-text">
+              <div class="name">Pay electricity bill</div>
+              <div class="meta">🕒 10:00 · $12.00 · medium priority</div>
+            </div>
+          </div>
+          <div class="preview-task warn">
+            <div class="preview-check"></div>
+            <div class="preview-task-text">
+              <div class="name">Submit project report</div>
+              <div class="meta">🕒 14:00 · 90 min · high priority</div>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
+</div>
 
-  <script src="app.js"></script>
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">Everything you need</div>
+  <h2 class="section-title">Built for real life</h2>
+  <p class="section-sub">Not just a to-do list. A complete system for managing how you spend your time and money every day.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(108,140,255,.15);">📋</div>
+      <h3>Daily Tasks &amp; Achievements</h3>
+      <p>Add tasks with priority levels, time, duration, and cost. Mark them done and track your completion rate in real time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(167,139,250,.15);">🕒</div>
+      <h3>Visual Timetable</h3>
+      <p>See all your tasks laid out chronologically across the day. Know exactly what's coming next and stay on schedule.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(108,224,179,.15);">💰</div>
+      <h3>Full Budget Tracker</h3>
+      <p>Log income, expenses, and savings. Track rent, electricity, phone, subscriptions — every cost of living, categorised and visualised.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(244,114,182,.15);">📝</div>
+      <h3>Personal Notes</h3>
+      <p>Write notes and reports about your tasks and day. Keep your thoughts organised alongside your schedule.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,180,84,.15);">📄</div>
+      <h3>PDF Export &amp; Sharing</h3>
+      <p>Export any section as a PDF or share a text summary via WhatsApp or email — right from inside the app.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(255,107,107,.15);">🔒</div>
+      <h3>100% Private</h3>
+      <p>No accounts, no cloud, no tracking. All your data lives on your device only. Works fully offline.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="download-section" id="download">
+  <div class="download-inner">
+    <h2>Get the app — free</h2>
+    <p>One click to download. No signup, no subscription, no catch.</p>
+    <div class="download-btns">
+      <a class="btn-win" href="https://github.com/Amgedhigazi/U-plan2nailit/releases/download/v1.0.0/U.Plan.2.Nail.It.1.0.0.exe">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        Download for Windows (.exe)
+      </a>
+      <a class="btn-android" href="https://github.com/Amgedhigazi/U-plan2nailit/releases/download/v1.0.0/UPlan2NailIt.apk">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 15.341c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m-11.046 0c-.399 0-.724-.325-.724-.724s.325-.724.724-.724.724.325.724.724-.325.724-.724.724m11.41-6.19l1.43-2.477a.297.297 0 0 0-.109-.406.298.298 0 0 0-.406.109l-1.449 2.51A8.938 8.938 0 0 0 12 8.15a8.937 8.937 0 0 0-5.353 1.737L5.198 7.377a.297.297 0 0 0-.406-.109.297.297 0 0 0-.109.406l1.43 2.477C3.968 11.358 2.5 13.58 2.5 16.1h19c0-2.52-1.468-4.742-3.613-5.949"/></svg>
+        Download for Android (.apk)
+      </a>
+    </div>
+    <p class="platform-note">Windows 10/11 · Android 8+ · Free forever</p>
+  </div>
+</section>
+
+<!-- WHATSAPP SHARE BAR -->
+<div class="share-bar">
+  <span>Know someone who'd love this?</span>
+  <a class="btn-wa" href="https://wa.me/?text=Check%20out%20U%20Plan%202%20Nail%20It%20%E2%80%94%20a%20free%20desktop%20app%20for%20daily%20tasks%2C%20budget%2C%20timetable%20and%20notes!%20Download%20it%20here%3A%20https%3A%2F%2Famgedhigazi.github.io%2FU-plan2nailit%2F" target="_blank">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+    Share on WhatsApp
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Designed &amp; Developed by <strong>Amged Higazi</strong> &nbsp;·&nbsp; U Plan 2 Nail It &nbsp;·&nbsp; Free forever</p>
+  <p style="margin-top:8px;">© 2026 All rights reserved.</p>
+</footer>
+
 </body>
 </html>
